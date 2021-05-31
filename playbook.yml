@@ -11,6 +11,9 @@
   gather_facts: false
   # any_error_fatal: true
   become: true
-  pre_tasks:
+  tasks:
       - name: "Test"
+        ansible.builtin.command: sleep 20
+
+      - name: "Test1"
         ansible.builtin.command: sleep 20
