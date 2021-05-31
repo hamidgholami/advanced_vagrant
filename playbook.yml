@@ -1,0 +1,16 @@
+---
+- hosts:
+   - brokers
+   - zookeepers
+   - zoonavigators
+   - connects
+   - ksqldbs
+   - rest_proxies
+   - schema_registries
+
+  gather_facts: false
+  # any_error_fatal: true
+  become: true
+  pre_tasks:
+      - name: "Test"
+        ansible.builtin.command: sleep 20
