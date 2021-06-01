@@ -19,7 +19,7 @@ schemaregistry_vms: 0
 
 # VAGRANT BOX
 vagrant_box: centos/7
-# vagrant_box_url: http://lanartifactory.dotin.ir/artifactory/vagrant/centos7_libvirt.box
+# vagrant_box_url: http://artifactory.company/artifactory/vagrant/centos7_libvirt.box
 
 # MEMORY & CPU
 cpu_count: 1
