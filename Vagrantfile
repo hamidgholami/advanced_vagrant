@@ -14,11 +14,11 @@ config_file=File.expand_path(File.join(File.dirname(__FILE__), 'vagrant_variable
 settings=YAML.load_file(config_file)
 
 LABEL_PREFIX    = settings['label_prefix'] ? settings['label_prefix'] + "-" : ""
-KAFKA_BROKER    = settings['broker_vms']
-ZOOKEEPER       = settings['zookeeper_vms']
-ZOONAVIGATOR    = settings['zoonavigator_vms']
-CONNECT         = settings['connect_vms']
-KSQLDB          = settings['ksqldb_vms']
+MACHINE_H       = settings['h']
+MACHINE_A       = settings['a']
+MACHINE_M       = settings['m']
+MACHINE_I       = settings['i']
+MACHINE_D       = settings['d']
 REST_PROXY      = settings['restproxy_vms']
 SCHEMA_REGISTRY = settings['schemaregistry_vms']
 BOX             = ENV['ANSIBLE_VAGRANT_BOX'] || settings['vagrant_box']
@@ -50,11 +50,11 @@ ansible_provision = proc do |ansible|
     end
 
     ansible.groups = {
-        'brokers'             => (0..KAFKA_BROKER - 1).map { |j| "#{LABEL_PREFIX}broker#{j}" },
-        'zookeepers'          => (0..ZOOKEEPER - 1).map { |j| "#{LABEL_PREFIX}ZOOKEEPER#{j}" },
-        'zoonavigators'       => (0..ZOONAVIGATOR - 1).map { |j| "#{LABEL_PREFIX}ZOONAVIGATOR#{j}" },
-        'connects'            => (0..CONNECT - 1).map { |j| "#{LABEL_PREFIX}CONNECT#{j}" },
-        'ksqldbs'             => (0..KSQLDB - 1).map { |j| "#{LABEL_PREFIX}KSQLDB#{j}" },
+        'h'       => (0..MACHINE_H - 1).map { |j| "#{LABEL_PREFIX}h#{j}" },
+        'a'       => (0..MACHINE_A - 1).map { |j| "#{LABEL_PREFIX}a#{j}" },
+        'm'       => (0..MACHINE_M - 1).map { |j| "#{LABEL_PREFIX}m#{j}" },
+        'i'       => (0..MACHINE_I - 1).map { |j| "#{LABEL_PREFIX}i#{j}" },
+        'd'       => (0..MACHINE_D - 1).map { |j| "#{LABEL_PREFIX}d#{j}" },
         'rest_proxies'        => (0..REST_PROXY - 1).map { |j| "#{LABEL_PREFIX}REST_PROXY#{j}" },
         'schema_registries'   => (0..SCHEMA_REGISTRY - 1).map { |j| "#{LABEL_PREFIX}SCHEMA_REGISTRY#{j}" }
      }
@@ -95,15 +95,15 @@ if DISABLE_SYNCED_FOLDER
        end
 end
 
-(0..KAFKA_BROKER - 1).each do |i|
-    config.vm.define "#{LABEL_PREFIX}broker#{i}" do |broker|
-    broker.vm.hostname = "#{LABEL_PREFIX}broker#{i}"
+(0..MACHINE_H - 1).each do |i|
+    config.vm.define "#{LABEL_PREFIX}h#{i}" do |h|
+    h.vm.hostname = "#{LABEL_PREFIX}h#{i}"
     if ASSIGN_STATIC_IP
-        broker.vm.network :private_network,
+        h.vm.network :private_network,
         ip: "#{PUBLIC_SUBNET}.#{$last_ip_pub_digit+=1}"
     end
     # Libvirt
-    broker.vm.provider :libvirt do |lv|
+    h.vm.provider :libvirt do |lv|
         lv.memory = MEMORY
         lv.storage_pool_name = 'pool_myhome_SSD'
         # lv.random_hostname = true
@@ -111,15 +111,15 @@ end
     end
 end
 
-(0..ZOOKEEPER - 1).each do |i|
-    config.vm.define "#{LABEL_PREFIX}zookeeper#{i}" do |zookeeper|
-    zookeeper.vm.hostname = "#{LABEL_PREFIX}zookeeper#{i}"
+(0..MACHINE_A - 1).each do |i|
+    config.vm.define "#{LABEL_PREFIX}a#{i}" do |a|
+    a.vm.hostname = "#{LABEL_PREFIX}a#{i}"
     if ASSIGN_STATIC_IP
-        zookeeper.vm.network :private_network,
+        a.vm.network :private_network,
         ip: "#{PUBLIC_SUBNET}.#{$last_ip_pub_digit+=1}"
     end
     # Libvirt
-    zookeeper.vm.provider :libvirt do |lv|
+    a.vm.provider :libvirt do |lv|
         lv.memory = MEMORY
         lv.storage_pool_name = 'pool_myhome_SSD'
         # lv.random_hostname = true
@@ -127,21 +127,21 @@ end
     end
 end
 
-(0..ZOONAVIGATOR - 1).each do |i|
-    config.vm.define "#{LABEL_PREFIX}zoonavigator#{i}" do |zoonavigator|
-    zoonavigator.vm.hostname = "#{LABEL_PREFIX}zoonavigator#{i}"
+(0..MACHINE_M - 1).each do |i|
+    config.vm.define "#{LABEL_PREFIX}m#{i}" do |m|
+    m.vm.hostname = "#{LABEL_PREFIX}m#{i}"
     if ASSIGN_STATIC_IP
-        zoonavigator.vm.network :private_network,
+        m.vm.network :private_network,
         ip: "#{PUBLIC_SUBNET}.#{$last_ip_pub_digit+=1}"
     end
     # Libvirt
-    zoonavigator.vm.provider :libvirt do |lv|
+    m.vm.provider :libvirt do |lv|
         lv.memory = MEMORY
         lv.storage_pool_name = 'pool_myhome_SSD'
         # lv.random_hostname = true
         end
 
-           zoonavigator.vm.provision 'ansible', &ansible_provision if i == (ZOONAVIGATOR - 1)
+           m.vm.provision 'ansible', &ansible_provision if i == (MACHINE_M - 1)
        end
     end
 end

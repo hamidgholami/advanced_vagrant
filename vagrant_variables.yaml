@@ -9,11 +9,11 @@ configs:
     # < More Variables...>
     
 # LIST OF VMS
-broker_vms: 1
-zookeeper_vms: 1
-zoonavigator_vms: 1
-connect_vms: 0
-ksqldb_vms: 0
+h: 1
+a: 1
+m: 1
+i: 0
+d: 0
 restproxy_vms: 0
 schemaregistry_vms: 0
 
