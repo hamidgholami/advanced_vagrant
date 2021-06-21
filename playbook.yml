@@ -11,6 +11,27 @@
   gather_facts: false
   # any_error_fatal: true
   become: true
+  vars:
+    os_tuning_params:
+      - { name: fs.file-max, value: 26234859 }
+      - { name: vm.zone_reclaim_mode, value: 0 }
+      - { name: vm.swappiness, value: 0 }
+      # - { name: vm.min_free_kbytes, value: "{{ vm_min_free_kbytes }}" }
+  
+  pre_tasks:
+      - name: apply operating system tuning
+        sysctl:
+          name: "{{ item.name }}"
+          value: "{{ item.value }}"
+          state: present
+          sysctl_file: /etc/sysctl.d/vagrant-tuning.conf
+          sysctl_set: yes
+          ignoreerrors: yes
+        with_items:
+          # - { name: "fs.aio-max-nr", value: "1048576", enable: "{{ osd_objectstore == 'bluestore' }}" }
+          - "{{ os_tuning_params }}"
+        when: item.enable | default(true) | bool
+
   tasks:
       - name: "Test"
         ansible.builtin.command: sleep 20
