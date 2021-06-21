@@ -19,8 +19,6 @@ MACHINE_A       = settings['a']
 MACHINE_M       = settings['m']
 MACHINE_I       = settings['i']
 MACHINE_D       = settings['d']
-REST_PROXY      = settings['restproxy_vms']
-SCHEMA_REGISTRY = settings['schemaregistry_vms']
 BOX             = ENV['ANSIBLE_VAGRANT_BOX'] || settings['vagrant_box']
 BOX_URL         = ENV['ANSIBLE_VAGRANT_BOX_URL'] || settings['vagrant_box_url']
 MEMORY          = settings['memory']
@@ -55,8 +53,6 @@ ansible_provision = proc do |ansible|
         'm'       => (0..MACHINE_M - 1).map { |j| "#{LABEL_PREFIX}m#{j}" },
         'i'       => (0..MACHINE_I - 1).map { |j| "#{LABEL_PREFIX}i#{j}" },
         'd'       => (0..MACHINE_D - 1).map { |j| "#{LABEL_PREFIX}d#{j}" },
-        'rest_proxies'        => (0..REST_PROXY - 1).map { |j| "#{LABEL_PREFIX}REST_PROXY#{j}" },
-        'schema_registries'   => (0..SCHEMA_REGISTRY - 1).map { |j| "#{LABEL_PREFIX}SCHEMA_REGISTRY#{j}" }
      }
 
      ansible.extra_vars = {
@@ -140,8 +136,40 @@ end
         lv.storage_pool_name = 'pool_myhome_SSD'
         # lv.random_hostname = true
         end
+    end
+end
 
-           m.vm.provision 'ansible', &ansible_provision if i == (MACHINE_M - 1)
+(0..MACHINE_I - 1).each do |i|
+    config.vm.define "#{LABEL_PREFIX}i#{i}" do |i|
+    i.vm.hostname = "#{LABEL_PREFIX}i#{i}"
+    if ASSIGN_STATIC_IP
+        i.vm.network :private_network,
+        ip: "#{PUBLIC_SUBNET}.#{$last_ip_pub_digit+=1}"
+    end
+    # Libvirt
+    i.vm.provider :libvirt do |lv|
+        lv.memory = MEMORY
+        lv.storage_pool_name = 'pool_myhome_SSD'
+        # lv.random_hostname = true
+        end
+    end
+end
+
+(0..MACHINE_D - 1).each do |i|
+    config.vm.define "#{LABEL_PREFIX}d#{i}" do |d|
+    d.vm.hostname = "#{LABEL_PREFIX}d#{i}"
+    if ASSIGN_STATIC_IP
+        d.vm.network :private_network,
+        ip: "#{PUBLIC_SUBNET}.#{$last_ip_pub_digit+=1}"
+    end
+    # Libvirt
+    d.vm.provider :libvirt do |lv|
+        lv.memory = MEMORY
+        lv.storage_pool_name = 'pool_myhome_SSD'
+        # lv.random_hostname = true
+        end
+
+           d.vm.provision 'ansible', &ansible_provision if i == (MACHINE_D - 1)
        end
     end
 end

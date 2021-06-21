@@ -1,10 +1,10 @@
 ---
 - hosts:
-   - brokers
-   - zookeepers
-   - zoonavigators
-   - connects
-   - ksqldbs
+   - h
+   - a
+   - m
+   - i
+   - d
    - rest_proxies
    - schema_registries
 
