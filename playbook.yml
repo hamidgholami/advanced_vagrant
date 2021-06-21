@@ -5,8 +5,6 @@
    - m
    - i
    - d
-   - rest_proxies
-   - schema_registries
 
   gather_facts: false
   # any_error_fatal: true
